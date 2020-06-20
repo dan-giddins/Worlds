@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 
 public class BuildFaces : MonoBehaviour
 {
+	public GameObject Face;
+
 	void Start()
 	{
 		var mesh = GetComponent<MeshFilter>().mesh;
@@ -13,7 +16,6 @@ public class BuildFaces : MonoBehaviour
 				i,
 				new Vector3[]
 				{
-
 					vertices[triangles[i * 3]],
 					vertices[triangles[i * 3 + 1]],
 					vertices[triangles[i * 3 + 2]]
@@ -23,14 +25,21 @@ public class BuildFaces : MonoBehaviour
 
 	private void CreateFaceObject(int i, Vector3[] vertices)
 	{
-		var gameObject = Instantiate(new GameObject(), transform);
-		gameObject.name = $"triangle_{i}";
-		gameObject.AddComponent<MeshFilter>();
-		gameObject.AddComponent<MeshRenderer>();
-		var triangleMesh = gameObject.GetComponent<MeshFilter>().mesh;
-		triangleMesh.Clear();
-		triangleMesh.vertices = vertices;
-		triangleMesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1) };
-		triangleMesh.triangles = new int[] { 0, 1, 2 };
+		var face = Instantiate(Face, transform);
+		face.name = $"triangle_{i}";
+		face.AddComponent<MeshFilter>();
+		var mesh = face.GetComponent<MeshFilter>().mesh;
+		mesh.vertices = vertices;
+		mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1) };
+		mesh.triangles = new int[] { 0, 1, 2 };
+		face.AddComponent<MeshRenderer>();
+		var renderer = face.GetComponent<MeshRenderer>();
+		var rand = new System.Random();
+		var resourcesPath = $@"{Directory.GetCurrentDirectory()}\Assets\Resources\";
+		var materials = Directory.GetFiles($"{resourcesPath}Materials", "*.mat");
+		var materialPath = materials[rand.Next(materials.Length)];
+		var path = materialPath.Replace(resourcesPath, "");
+		System.Console.WriteLine(path);
+		renderer.material = Resources.Load(path, typeof(Material)) as Material;
 	}
 }

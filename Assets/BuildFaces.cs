@@ -4,6 +4,7 @@ using UnityEngine;
 public class BuildFaces : MonoBehaviour
 {
 	public GameObject Face;
+	private readonly System.Random Random = new System.Random();
 
 	void Start()
 	{
@@ -25,21 +26,22 @@ public class BuildFaces : MonoBehaviour
 
 	private void CreateFaceObject(int i, Vector3[] vertices)
 	{
-		var face = Instantiate(Face, transform);
+		var face = Instantiate(Face, transform, false);
 		face.name = $"triangle_{i}";
-		face.AddComponent<MeshFilter>();
+		//face.AddComponent<MeshFilter>();
 		var mesh = face.GetComponent<MeshFilter>().mesh;
 		mesh.vertices = vertices;
 		mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1) };
 		mesh.triangles = new int[] { 0, 1, 2 };
-		face.AddComponent<MeshRenderer>();
-		var renderer = face.GetComponent<MeshRenderer>();
-		var rand = new System.Random();
+		mesh.RecalculateNormals();
+		//face.AddComponent<MeshRenderer>();
+		var renderer = face.GetComponent<Renderer>();
+		renderer.enabled = true;
 		var resourcesPath = $@"{Directory.GetCurrentDirectory()}\Assets\Resources\";
 		var materials = Directory.GetFiles($"{resourcesPath}Materials", "*.mat");
-		var materialPath = materials[rand.Next(materials.Length)];
-		var path = materialPath.Replace(resourcesPath, "");
-		System.Console.WriteLine(path);
-		renderer.material = Resources.Load(path, typeof(Material)) as Material;
+		var materialPath = materials[Random.Next(materials.Length)];
+		var path = materialPath.Replace(resourcesPath, "").Split('.')[0];
+		var material = Resources.Load(path, typeof(Material)) as Material;
+		renderer.sharedMaterial = material;
 	}
 }

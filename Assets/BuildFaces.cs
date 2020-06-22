@@ -38,7 +38,7 @@ public class BuildFaces : MonoBehaviour
 		var renderer = face.GetComponent<Renderer>();
 		renderer.enabled = true;
 		var resourcesPath = $@"{Directory.GetCurrentDirectory()}\Assets\Resources\";
-		var materials = Directory.GetFiles($"{resourcesPath}Materials", "*.mat");
+		var materials = Directory.GetFiles($"{resourcesPath}", "*.mat");
 		var materialPath = materials[Random.Next(materials.Length)];
 		var path = materialPath.Replace(resourcesPath, "").Split('.')[0];
 		var material = Resources.Load(path, typeof(Material)) as Material;

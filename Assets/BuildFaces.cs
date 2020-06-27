@@ -28,13 +28,11 @@ public class BuildFaces : MonoBehaviour
 	{
 		var face = Instantiate(Face, transform, false);
 		face.name = $"triangle_{i}";
-		//face.AddComponent<MeshFilter>();
 		var mesh = face.GetComponent<MeshFilter>().mesh;
 		mesh.vertices = vertices;
 		mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1) };
 		mesh.triangles = new int[] { 0, 1, 2 };
 		mesh.RecalculateNormals();
-		//face.AddComponent<MeshRenderer>();
 		var renderer = face.GetComponent<Renderer>();
 		renderer.enabled = true;
 		var resourcesPath = $@"{Directory.GetCurrentDirectory()}\Assets\Resources\";
@@ -43,5 +41,7 @@ public class BuildFaces : MonoBehaviour
 		var path = materialPath.Replace(resourcesPath, "").Split('.')[0];
 		var material = Resources.Load(path, typeof(Material)) as Material;
 		renderer.sharedMaterial = material;
+		var collider = face.GetComponent<MeshCollider>();
+		collider.sharedMesh = mesh;
 	}
 }

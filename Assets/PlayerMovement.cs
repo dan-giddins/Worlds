@@ -19,24 +19,30 @@ public class PlayerMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		// movement
+		var x = Input.GetAxis("Horizontal");
+		var z = Input.GetAxis("Vertical");
+		var move = transform.right * x + transform.forward * z;
+		// falling
 		IsGrounded = Physics.CheckSphere(GroundCheck.position, GroundDistance, GroundMask);
 		if (IsGrounded && Velocity.y < 0)
 		{
 			Velocity.y = -2f;
 		}
-		var x = Input.GetAxis("Horizontal");
-		var z = Input.GetAxis("Vertical");
-		var move = transform.right * x + transform.forward * z;
-		Controller.Move(move * Speed * Time.deltaTime);
+		else
+		{
+			Velocity.y += Gravity * Time.deltaTime;
+		}
+		// jumping
 		if (Input.GetButtonDown("Jump") && IsGrounded)
 		{
 			Velocity.y = Mathf.Sqrt(JumpHeight * -2f * Gravity);
 		}
-		Velocity.y += Gravity * Time.deltaTime;
-		Controller.Move(Velocity * Time.deltaTime);
-		var dx = transform.position.x + CentreOfGravity.transform.position.x;
-		var dy = transform.position.y + CentreOfGravity.transform.position.y;
-		var dz = transform.position.z + CentreOfGravity.transform.position.z;
+		Controller.Move((Velocity + move * Speed)* Time.deltaTime);
+		// orientation
+		var dx = transform.position.x - CentreOfGravity.transform.position.x;
+		var dy = transform.position.y - CentreOfGravity.transform.position.y;
+		var dz = transform.position.z - CentreOfGravity.transform.position.z;
 		transform.rotation = Quaternion.Euler(
 			(float)(Math.Tanh(dz / dy) * 180 / Math.PI),
 			transform.rotation.eulerAngles.y,
